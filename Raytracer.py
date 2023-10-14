@@ -18,14 +18,16 @@ raytracer.envMap = pygame.image.load("imas/enviroment.jpg")
 raytracer.rtClearColor(0.25, 0.25, 0.25)
 
 
-blanco = Material(diffuse=(255,255,255))
-mirror = Material(diffuse=(200,200, 200), spec =64, ks = 0.02, matType=REFLECTIVE)
-glass =  Material(diffuse=(100,255, 255), spec =64, ior = 1.5, ks = 0.02, matType=TRANSPARENT)
+opaco = Material(diffuse=(0,0,0))
+espejo = Material(diffuse=(100,235, 224), spec =64, ks = 0.02, matType=REFLECTIVE)
+transparente =  Material(diffuse=(100,255, 255), spec =64, ior = 1.5, ks = 0.02, matType=TRANSPARENT)
 
 
 objetos = [
     # Esfera de cristal
-    Triangle(material= mirror , p0=(-0.5, -0.5, -0.5), p1=(0.5, -0.5, -0.5), p2=(0.5, 0.5, -0.5), position=(0, 0, 0)),
+    Triangle(material= transparente , p0=(-0.5, -0.5, -0.5), p1=(0.5, 0.9, -0.5), p2=(0.5, 0.5, -0.5), position=(-1.5, -1, -3)),
+    Triangle(material= espejo , p0=(-0.5, -0.5, -0.5), p1=(0.5, -0.5, -0.5), p2=(0.5, 0.5, -0.5), position=(0, 0, 0)),
+    Triangle(material= opaco , p0=(-0.5, -0.5, -0.5), p1=(0.5, -0.5, 0.5), p2=(0.5, 0.5, -0.5), position=(-1, 1, -3)),
 ]
 
 luces = [
