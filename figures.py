@@ -166,57 +166,51 @@ class AABB(Shape):
                          obj=self)
 
 
+class Triangle(Shape):
 
-class Torus(Shape):
+    def __init__(self, p0, p1, p2, position, material):
+        self.p0 = p0
+        self.p1 = p1
+        self.p2 = p2
 
-    def __init__(self, position, big_radius, small_radius, material):
-        self.big_radius = big_radius
-        self.small_radius = small_radius
         super().__init__(position, material)
 
     def ray_intersect(self, orig, dir):
 
-        # translate ray to object space
         orig = mate.sub(orig, self.position)
 
-        # solve quadratic equation for intersection
-        a = dir[0] ** 2 + dir[2] ** 2
-        b = 2 * (orig[0] * dir[0] + orig[2] * dir[2])
-        c = orig[0] ** 2 + orig[2] ** 2 - self.big_radius ** 2
+        # encuentra vectores para dos lados del triángulo
+        edge1 = mate.subtract(self.p1, self.p0)
+        edge2 = mate.subtract(self.p2, self.p0)
 
-        delta = b ** 2 - 4 * a * c
-        if delta < 0:
+        # producto cruz para obtener perpendicular
+        pvec = mate.cross(dir, edge2)
+        det = mate.dot_product(edge1, pvec)
+
+        if abs(det) < 0.0001:
             return None
 
-        sqrt_delta = sqrt(delta)
-        t1 = (-b + sqrt_delta) / (2 * a)
-        t2 = (-b - sqrt_delta) / (2 * a)
-
-        if t1 < 0 and t2 < 0:
+        # calcula distancia desde vertice 0 al rayo
+        tvec = mate.subtract(orig, self.p0)
+        u = mate.dot_product(tvec, pvec) / det
+        if u < 0 or u > 1:
             return None
 
-        t = min(t1, t2)
-
-        p = mate.add(orig, mate.multiply(t, dir))
-
-        # test distance from center circle
-        test = p[0] ** 2 + p[2] ** 2 - self.small_radius ** 2
-        if test > 0:
+        # producto cruz para segundo perpendicular
+        qvec = mate.cross(tvec, edge1)
+        v = mate.dot_product(dir, qvec) / det
+        if v < 0 or u + v > 1:
             return None
 
-        # calculate normal
-        n = mate.sub(p, (self.big_radius, 0, 0))
-        n = mate.divTF(n, mate.norm(n))
+        t = mate.dot_product(edge2, qvec) / det
+        if t < 0:
+            return None
 
-        # calculate texcoords
-        u = atan2(p[2], p[0]) / (2 * pi) + 0.5
-        v = atan2(sqrt(p[0] ** 2 + p[2] ** 2), p[1]) / (2 * pi)
-
-        # transform intersection point back to world space
-        p = mate.add(self.position, p)
+        # calcula normal del triángulo
+        normal = mate.normalize(mate.cross(edge1, edge2))
 
         return Intercept(distance=t,
-                         point=p,
-                         normal=n,
+                         point=mate.add(orig, mate.multiply(t, dir)),
+                         normal=normal,
                          texcoords=(u, v),
-                         obj=self)
+                            obj=self)

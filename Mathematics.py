@@ -1,4 +1,4 @@
-from math import isclose ,sqrt
+from math import isclose ,sqrt, sin, cos, tan, pi, atan2, acos, sqrt
 
 def add_matrices(mat1, mat2):
   if len(mat1) != len(mat2) or len(mat1[0]) != len(mat2[0]):
@@ -158,10 +158,33 @@ def dot_product(array1, array2):
         return dot_product
     
 def multiply(i = 1 , arr = [1]):
-    return [i * x for x in arr]
+
+    if len(arr) == 0:
+        raise ValueError("Array must have at least one element.")
+
+    if i == 1:
+        return arr
+    else:
+        return [i * elem for elem in arr]
+
 
 def subtract(arr1, arr2):
     if len(arr1) != len(arr2):
             raise ValueError("Arrays must have the same length for subtraction.")
         
     return [a - b for a, b in zip(arr1, arr2)]
+
+
+def rotateY(v, theta):
+    sin_t = sin(theta)
+    cos_t = cos(theta)
+
+    x = v[0] * cos_t + v[2] * sin_t
+    y = v[1]
+    z = -v[0] * sin_t + v[2] * cos_t
+
+    return (x, y, z)
+
+def normalize(v):
+  norm = sqrt(v[0]**2 + v[1]**2 + v[2]**2)
+  return (v[0]/norm, v[1]/norm, v[2]/norm)
