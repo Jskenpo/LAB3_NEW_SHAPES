@@ -58,29 +58,26 @@ class Sphere(Shape):
 
 
 class Plane(Shape):
-    def __init__(self, position, normal, material):
+    def __init__(self, position, normal, material,size):
         self.normal = mate.divTF(normal, mate.norm(normal))
+        self.size = size
         super().__init__(position, material)
 
     def ray_intersect(self, orig, dir):
         denom = mate.dot_product(dir, self.normal)
 
-        if abs(denom) <= 0.0001:
-            return None
+        if abs(denom) > 0.0001:
+            t = mate.dot_product(mate.sub(self.position, orig), self.normal) / denom
+            if t > 0:
+                p = mate.add(orig, mate.multiply(t, dir))
+                if abs(p[0] - self.position[0]) <= self.size[0] / 2 and abs(p[1] - self.position[1]) <= self.size[1] / 2:
+                    return Intercept(distance=t,
+                                     point=p,
+                                     normal=self.normal,
+                                     texcoords=None,
+                                     obj=self)
 
-        num = mate.dot_product(mate.sub(self.position, orig), self.normal)
-        t = num / denom
-
-        if t < 0:
-            return None
-
-        P = mate.add(orig, mate.multiply(t, dir))
-
-        return Intercept(distance=t,
-                         point=P,
-                         normal=self.normal,
-                         texcoords=None,
-                         obj=self)
+        return None
 
 
 class Disk(Plane):
@@ -107,18 +104,41 @@ class Disk(Plane):
                          texcoords=None,
                          obj=self)
 
+class NewPlane(Shape):
+    def __init__(self, position, normal, material):
+        self.normal = mate.divTF(normal, mate.norm(normal))
+        super().__init__(position, material)
 
+    def ray_intersect(self, orig, dir):
+        denom = mate.dot_product(dir, self.normal)
+
+        if abs(denom) <= 0.0001:
+            return None
+
+        num = mate.dot_product(mate.sub(self.position, orig), self.normal)
+        t = num / denom
+
+        if t < 0:
+            return None
+
+        P = mate.add(orig, mate.multiply(t, dir))
+
+        return Intercept(distance=t,
+                         point=P,
+                         normal=self.normal,
+                         texcoords=None,
+                         obj=self)
 class AABB(Shape):
     def __init__(self, position, size, material):
         self.size = size
         super().__init__(position, material)
 
-        self.planes = [Plane(mate.add(self.position, (-size[0] / 2, 0, 0)), (-1, 0, 0), material),
-                       Plane(mate.add(self.position, (size[0] / 2, 0, 0)), (1, 0, 0), material),
-                       Plane(mate.add(self.position, (0, -size[1] / 2, 0)), (0, -1, 0), material),
-                       Plane(mate.add(self.position, (0, size[1] / 2, 0)), (0, 1, 0), material),
-                       Plane(mate.add(self.position, (0, 0, -size[2] / 2)), (0, 0, -1), material),
-                       Plane(mate.add(self.position, (0, 0, size[2] / 2)), (0, 0, 1), material)]
+        self.planes = [NewPlane(mate.add(self.position, (-size[0] / 2, 0, 0)), (-1, 0, 0), material),
+                       NewPlane(mate.add(self.position, (size[0] / 2, 0, 0)), (1, 0, 0), material),
+                       NewPlane(mate.add(self.position, (0, -size[1] / 2, 0)), (0, -1, 0), material),
+                       NewPlane(mate.add(self.position, (0, size[1] / 2, 0)), (0, 1, 0), material),
+                       NewPlane(mate.add(self.position, (0, 0, -size[2] / 2)), (0, 0, -1), material),
+                       NewPlane(mate.add(self.position, (0, 0, size[2] / 2)), (0, 0, 1), material)]
 
         # Bounds
         self.boundsMin = [0, 0, 0]
@@ -164,8 +184,6 @@ class AABB(Shape):
                          normal=intersect.normal,
                          texcoords=(u, v),
                          obj=self)
-
-
 class Triangle(Shape):
 
     def __init__(self, p0, p1, p2, position, material):

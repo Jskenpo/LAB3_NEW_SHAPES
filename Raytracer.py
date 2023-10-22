@@ -21,18 +21,27 @@ raytracer.rtClearColor(0.25, 0.25, 0.25)
 opaco = Material(diffuse=(0,0,0))
 espejo = Material(diffuse=(100,235, 224), spec =64, ks = 0.02, matType=REFLECTIVE)
 transparente =  Material(diffuse=(100,255, 255), spec =64, ior = 1.5, ks = 0.02, matType=TRANSPARENT)
+star_texture = Material(texture=pygame.image.load("imas/octaedro1.jpg"), spec=64, ks=0.02, matType=OPAQUE)
+sphere_eye_texture = Material(texture=pygame.image.load("imas/earth.png"))
+Red_carpet = Material (diffuse=(255,0,0), spec =64, ks = 0.02, matType=OPAQUE)
+cube_stand = Material(texture=pygame.image.load("imas/cube.png"), spec=64, ks=0.02, matType=OPAQUE)
 
 
 objetos = [
     # 3 esferas en corma de circulo
-    Sphere(material=espejo, position=(0, 1.5, -6), radius=0.6),
-    Sphere(material=espejo, position=(-2, 1, -6), radius=0.6),
-    Sphere(material=espejo, position=(2, 1, -6), radius=0.6),
+    Sphere(material=espejo, position=(0, 2, -7), radius=0.6),
+    Sphere(material=espejo, position=(-2, 1, -7), radius=0.6),
+    Sphere(material=espejo, position=(2, 1, -7), radius=0.6),
+    Sphere(material=espejo, position=(0, -2, -7), radius=0.6),
+    Sphere(material=espejo, position=(-2, -1, -7), radius=0.6),
+    Sphere(material=espejo, position=(2, -1, -7), radius=0.6),
 
-    # Estrella encima de cada esfera
-    Star(material=espejo, position=(0, 2.5, -8)),
-    Star(material=espejo, position=(-2, 2, -8)),
-    Star(material=espejo, position=(2, 2, -8)),
+    # Plano debajo de esferas en forma de alfombra roja
+    Plane(material=Red_carpet, position=(0, -3, -7), normal=(0, 5, 0.5), size=(4, 4)),
+
+    #cubo centro de escena
+    AABB(material=cube_stand, position=(0, 0, -7), size=(1, 1, 1)),
+
 
 
 
