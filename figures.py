@@ -214,3 +214,44 @@ class Triangle(Shape):
                          normal=normal,
                          texcoords=(u, v),
                             obj=self)
+
+class Star(Shape):
+    def __init__(self, position, material):
+        super().__init__(position, material)
+
+        self.triangles = [
+            Triangle((-1, 0, 0), (0, 0, 1), (0, 1, 0), position, material),
+            Triangle((0, 0, 1), (1, 0, 0), (0, 1, 0), position, material),
+            Triangle((0, 0, 1), (1, 0, 0), (0, -1, 0), position, material),
+            Triangle((0, 0, 1), (-1, 0, 0), (0, -1, 0), position, material),
+            Triangle((0, 0, -1), (0, 1, 0), (1, 0, 0), position, material),
+            Triangle((0, 0, -1), (0, -1, 0), (1, 0, 0), position, material),
+            Triangle((0, 0, -1), (0, 1, 0), (-1, 0, 0), position, material),
+            Triangle((0, 0, -1), (0, -1, 0), (-1, 0, 0), position, material),
+        ]
+
+    ##add rotation
+
+    def ray_intersect(self, orig, dir):
+        intersect = None
+        t = float('inf')
+        u = 0
+        v = 0
+
+        for triangle in self.triangles:
+            triangleIntersect = triangle.ray_intersect(orig, dir)
+            if triangleIntersect is not None:
+                if triangleIntersect.distance < t:
+                    t = triangleIntersect.distance
+                    intersect = triangleIntersect
+                    u = triangleIntersect.texcoords[0]
+                    v = triangleIntersect.texcoords[1]
+
+        if intersect is None:
+            return None
+
+        return Intercept(distance=t,
+                         point=intersect.point,
+                         normal=intersect.normal,
+                         texcoords=(u, v),
+                         obj=self)

@@ -24,10 +24,18 @@ transparente =  Material(diffuse=(100,255, 255), spec =64, ior = 1.5, ks = 0.02,
 
 
 objetos = [
-    # Esfera de cristal
-    Triangle(material= transparente , p0=(-0.5, -0.5, -0.5), p1=(0.5, 0.9, -0.5), p2=(0.5, 0.5, -0.5), position=(-1.5, -1, -3)),
-    Triangle(material= espejo , p0=(-0.5, -0.5, -0.5), p1=(0.5, -0.5, -0.5), p2=(0.5, 0.5, -0.5), position=(0, 0, 0)),
-    Triangle(material= opaco , p0=(-0.5, -0.5, -0.5), p1=(0.5, -0.5, 0.5), p2=(0.5, 0.5, -0.5), position=(-1, 1, -3)),
+    # 3 esferas en corma de circulo
+    Sphere(material=espejo, position=(0, 1.5, -6), radius=0.6),
+    Sphere(material=espejo, position=(-2, 1, -6), radius=0.6),
+    Sphere(material=espejo, position=(2, 1, -6), radius=0.6),
+
+    # Estrella encima de cada esfera
+    Star(material=espejo, position=(0, 2.5, -8)),
+    Star(material=espejo, position=(-2, 2, -8)),
+    Star(material=espejo, position=(2, 2, -8)),
+
+
+
 ]
 
 luces = [
